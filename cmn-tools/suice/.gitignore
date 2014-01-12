@@ -1,7 +1,5 @@
 /_ReSharper.suice
 /bin
 /obj
-/*.sln
 /*.suo
-/*.csproj
 /*.user

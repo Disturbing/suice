@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using UnityEngine;
 using System.Linq;
 
-namespace Toolbox.Injection
+namespace CmnTools.Suice
 {
     /// <summary>
     /// Suice Injection is Google's Guice port to C#.
@@ -29,13 +28,7 @@ namespace Toolbox.Injection
 
         public void Init()
         {
-            float timeStarted = Time.realtimeSinceStartup;
-
             InjectDependencies();
-
-            Debug.Log(string.Format("Injector initialized {0} dependencies in: {1}s",
-                providersMap.Count,
-                Time.realtimeSinceStartup - timeStarted));
         }
 
         private void InjectDependencies()
@@ -95,7 +88,6 @@ namespace Toolbox.Injection
 		{
 			try
 			{
-                Debug.Log("Registering provider type: " + bindedType + " to provider: " + provider);
 				providersMap.Add(bindedType, provider);
 			}
 			catch(ArgumentException e)
@@ -159,8 +151,6 @@ namespace Toolbox.Injection
 
 		private void CreateProvider(IBinding binding)
 		{
-            Debug.Log("Attempting to register binding: " + binding.BindedType);
-
 			if (binding.Scope == Scope.NO_SCOPE)
 			{
 				RegisterProvider(binding.TypeToBind,
@@ -174,8 +164,6 @@ namespace Toolbox.Injection
 				{
 					singletonProvider.SetInstance (binding.BindedInstance);
 				}
-
-                Debug.Log("Registering singleton binder!: " + binding.TypeToBind);
 
 				RegisterProvider(binding.TypeToBind, singletonProvider);
 			}
@@ -195,12 +183,10 @@ namespace Toolbox.Injection
 
 			if (constructorInfos.Length == 0)
 			{
-			    Debug.Log("Returning default constructor!");
 				constructorInfo = bindedType.GetConstructor (Type.EmptyTypes);
 			} 
 			else if (constructorInfos.Length == 1 && IsValidConstructor(constructorInfos[0]))
 			{
-                Debug.Log("Returning constructor with params : " + constructorInfos[0].GetParameters().Length);
 				constructorInfo = constructorInfos [0];
 			}
 

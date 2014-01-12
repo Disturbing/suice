@@ -1,6 +1,6 @@
 using System;
 
-namespace Toolbox.Injection
+namespace CmnTools.Suice
 {
 	/// <summary>
 	/// Provider marks methods in Modules to provide instance a specific instance

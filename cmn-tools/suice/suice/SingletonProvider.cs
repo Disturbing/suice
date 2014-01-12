@@ -1,7 +1,6 @@
 using System;
-using UnityEngine;
 
-namespace Toolbox.Injection
+namespace CmnTools.Suice
 {
     /// <summary>
     /// @author DisTurBinG

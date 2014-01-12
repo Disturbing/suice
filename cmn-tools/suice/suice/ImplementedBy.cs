@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Toolbox.Injection
+namespace CmnTools.Suice
 {
     /// <summary>
     /// Marker for interfaces to be registered as dependencies in the Injector.

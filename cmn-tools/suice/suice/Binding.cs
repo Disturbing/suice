@@ -1,6 +1,6 @@
 using System;
 
-namespace Toolbox.Injection
+namespace CmnTools.Suice
 {
 	/// <summary>
 	/// Binding maps a dependency type to a implementation instance type.

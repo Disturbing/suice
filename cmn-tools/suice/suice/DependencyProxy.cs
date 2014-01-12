@@ -3,7 +3,7 @@ using System.Runtime.Remoting.Messaging;
 using System.Reflection;
 using System;
 
-namespace Toolbox.Injection
+namespace CmnTools.Suice
 {
     /// <summary>
     /// TODO: This will not work! Need new proxy solution

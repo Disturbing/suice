@@ -1,6 +1,6 @@
 using System;
 
-namespace Toolbox.Injection
+namespace CmnTools.Suice
 {
 	public interface IBinding
 	{

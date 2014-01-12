@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace Toolbox.Injection
+namespace CmnTools.Suice
 {
 	/// <summary>
 	/// Singleton Method Provider provides dependencies from AbstractModule's @Provides methods with Singleton Scope

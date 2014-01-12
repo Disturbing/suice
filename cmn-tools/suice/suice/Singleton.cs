@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Toolbox.Injection
+namespace CmnTools.Suice
 {
     /// <summary>
     /// Singleton attribute flag, which marks a class should be instantiated as a singleton instance in the Injector.

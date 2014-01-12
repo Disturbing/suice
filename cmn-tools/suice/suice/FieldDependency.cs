@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace Toolbox.Injection
+namespace CmnTools.Suice
 {
 	internal struct FieldDependency
 	{

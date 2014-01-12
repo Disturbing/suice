@@ -1,4 +1,4 @@
-﻿namespace Toolbox.Injection
+﻿namespace CmnTools.Suice
 {
 	/// <summary>
 	/// Enumeration of Dependency scope types.

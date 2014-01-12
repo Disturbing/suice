@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace Toolbox.Injection
+namespace CmnTools.Suice
 {
 	/// <summary>
 	/// Helper class with reflection

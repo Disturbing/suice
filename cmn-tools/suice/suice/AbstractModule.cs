@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Toolbox.Injection
+namespace CmnTools.Suice
 {
 	/// <summary>
 	/// Implement Abstract Module to register custom binding rules

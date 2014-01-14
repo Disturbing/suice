@@ -17,7 +17,10 @@ namespace CmnTools.Suice
 
         internal virtual void CreateSingletonInstance()
         {
-            SetInstance(Activator.CreateInstance(ProvidedType, ConstructorDependencies));
+            if (Instance == null)
+            {
+                SetInstance(Activator.CreateInstance(ProvidedType, ConstructorDependencies));
+            }
         }
 
         internal void SetInstance (object instance)

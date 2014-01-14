@@ -26,6 +26,8 @@ namespace CmnTools.Suice
 
 		private readonly Dictionary<Type, IBinding> bindingMap = new Dictionary<Type, IBinding> ();
 
+        public Action<object> OnInitializeDependency;
+
         public void Init()
         {
             InjectDependencies();
@@ -269,10 +271,8 @@ namespace CmnTools.Suice
                 {
                     iDependency.Initialize();
                 }
-            }
-            else
-            {
-                provider.IsInitialized = true;
+
+                OnInitializeDependency(dependency);
             }
 
 		    return dependency;

@@ -4,15 +4,13 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace CmnTools.Suice
-{
+namespace CmnTools.Suice {
     /// <summary>
     /// Implementation for obtaining methods for construction via providers
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public interface IMethodConstructor
-    {
+    public interface IMethodConstructor {
         MethodInfo GetMethodConstructor();
     }
 }

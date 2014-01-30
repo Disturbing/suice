@@ -1,21 +1,18 @@
 ﻿using System;
 
-namespace CmnTools.Suice
-{
+namespace CmnTools.Suice {
     /// <summary>
     /// Marker for interfaces to be registered as dependencies in the Injector.
-	/// Specified ImplementedType will determine the implementation
+    /// Specified ImplementedType will determine the implementation
     ///
-	/// @author DisTurBinG
-	/// </summary>
+    /// @author DisTurBinG
+    /// </summary>
     [AttributeUsage(AttributeTargets.Interface)]
-    public class ImplementedBy : Attribute
-    {
+    public class ImplementedBy : Attribute {
         internal readonly Type ImplementedType;
 
-        public ImplementedBy(Type implementedType)
-        {
-			ImplementedType = implementedType;
+        public ImplementedBy(Type implementedType) {
+            ImplementedType = implementedType;
         }
     }
 }

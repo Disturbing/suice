@@ -1,39 +1,32 @@
 using System;
 using System.Reflection;
 
-namespace CmnTools.Suice
-{
-	/// <summary>
-	/// Singleton Method Provider provides dependencies from AbstractModule's @Provides methods with Singleton Scope
-	/// 
-	/// @author DisTurBinG
-	/// </summary>
-    public class SingletonMethodProvider : SingletonProvider, IMethodConstructor
-	{
-		private readonly AbstractModule module; 
-		private readonly MethodInfo methodInfo;
+namespace CmnTools.Suice {
+    /// <summary>
+    /// Singleton Method Provider provides dependencies from AbstractModule's @Provides methods with Singleton Scope
+    /// 
+    /// @author DisTurBinG
+    /// </summary>
+    public class SingletonMethodProvider : SingletonProvider, IMethodConstructor {
+        private readonly AbstractModule module;
+        private readonly MethodInfo methodInfo;
 
-		public SingletonMethodProvider (AbstractModule module, MethodInfo methodInfo)
-			: base(methodInfo.ReturnType)
-		{
-			this.module = module;
-			this.methodInfo = methodInfo;
-		}
+        public SingletonMethodProvider(AbstractModule module, MethodInfo methodInfo)
+            : base(methodInfo.ReturnType) {
+            this.module = module;
+            this.methodInfo = methodInfo;
+        }
 
-        protected override object ProvideObject()
-        {
+        protected override object ProvideObject() {
             return Instance ?? (Instance = methodInfo.Invoke(module, ConstructorDependencies));
         }
 
-	    public MethodInfo GetMethodConstructor()
-	    {
-	        return methodInfo;
-	    }
+        public MethodInfo GetMethodConstructor() {
+            return methodInfo;
+        }
 
-        internal override void CreateSingletonInstance()
-        {
+        internal override void CreateSingletonInstance() {
             // Do Nothing
         }
-	}
+    }
 }
-

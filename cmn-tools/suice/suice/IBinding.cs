@@ -1,16 +1,13 @@
 using System;
 
-namespace CmnTools.Suice
-{
-	public interface IBinding
-	{
-		Type TypeToBind { get; }
+namespace CmnTools.Suice {
+    public interface IBinding {
+        Type TypeToBind { get; }
 
-		Type BindedType { get; }
+        Type BindedType { get; }
 
-		Scope Scope { get; }
+        Scope Scope { get; }
 
-		object BindedInstance { get; }
-	}
+        object BindedInstance { get; }
+    }
 }
-

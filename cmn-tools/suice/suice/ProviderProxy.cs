@@ -1,26 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace CmnTools.Suice
-{
+namespace CmnTools.Suice {
     /// <summary>
     /// @author DisTurBinG
     /// </summary>
-    public class ProviderProxy : AbstractProvider
-    {
-        private readonly AbstractProvider provider;
+    public class ProviderProxy : AbstractProvider {
+        private AbstractProvider provider;
 
-        public ProviderProxy(AbstractProvider provider, Type providedType)
-            : base(providedType)
-        {
-            this.provider = provider;
+        public readonly Type ProviderType;
+
+        public ProviderProxy(Type providedType, Type providerType)
+            : base(providedType, providedType) {
+            ProviderType = providerType;
         }
 
-        protected override object ProvideObject()
-        {
-            return ((AbstractProvider)provider.Provide()).Provide();
+
+        internal void SetProviderInstance(AbstractProvider provider) {
+            if (!IsInitialized) {
+                this.provider = provider;
+                IsInitialized = true;
+            } else {
+                throw new Exception("Attempted to SetProviderInstance to ProviderProxy Twice!");
+            }
+        }
+
+        protected override object ProvideObject() {
+            return provider.Provide();
         }
     }
 }

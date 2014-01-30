@@ -1,37 +1,33 @@
 using System;
 
-namespace CmnTools.Suice
-{
-	/// <summary>
-	/// Interface for creating a Factory
-	/// 
-	/// @author DisTurBinG
-	/// </summary>
-	public abstract class AbstractProvider
-	{
-		protected object[] ConstructorDependencies { get; private set; }
+namespace CmnTools.Suice {
+    /// <summary>
+    /// Interface for creating a Factory
+    /// 
+    /// @author DisTurBinG
+    /// </summary>
+    public abstract class AbstractProvider {
+        protected object[] ConstructorDependencies { get; private set; }
 
-		public readonly Type ProvidedType;
+        public readonly Type ProvidedType;
 
-		internal bool IsInitialized;
+        public readonly Type ImplementedType;
 
-		protected AbstractProvider(Type providedType)
-		{
-			ProvidedType = providedType;
-		}
+        internal bool IsInitialized;
 
-		internal virtual void SetConstructorDependencies(object[] constructorDependencies)
-		{
-			ConstructorDependencies = constructorDependencies;
-		}
+        protected AbstractProvider(Type providedType, Type implementedType) {
+            ProvidedType = providedType;
+            ImplementedType = implementedType;
+        }
 
-		internal object Provide()
-		{
-			return ProvideObject();
-		}
+        internal virtual void SetConstructorDependencies(object[] constructorDependencies) {
+            ConstructorDependencies = constructorDependencies;
+        }
 
-		protected abstract object ProvideObject();
+        internal object Provide() {
+            return ProvideObject();
+        }
 
-	}
+        protected abstract object ProvideObject();
+    }
 }
-

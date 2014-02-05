@@ -9,7 +9,7 @@ The Suice framework begins with the Injector class.  You must first instantiate 
 This is an example of creating the Injector and initializing it after registering a module.
 
 <code>
-Using CmnTools.Suice;
+using CmnTools.Suice;
 
 public class MainAppClass
 {
@@ -41,7 +41,10 @@ Modules are classes that define factories, singletons and instances to specific 
 using CmnTools.Suice;
 public class ExampleModule : AbstractModule
 {
+
+	public override void Configure() {
 	Bind<INetworkService>().To<NetworkService>().In(Scope.SINGLETON);
+	}
 }
 
 </code>

@@ -1,30 +1,35 @@
 ﻿using System;
 
-namespace CmnTools.Suice {
+namespace DTools.Suice
+{
     /// <summary>
+    /// Container for the Providers to be injected into dependencies for the use of the Factory Method.
+    /// 
     /// @author DisTurBinG
     /// </summary>
-    public class ProviderProxy : AbstractProvider {
+    public class ProviderProxy : AbstractProvider
+    {
         private AbstractProvider provider;
 
         public readonly Type ProviderType;
 
         public ProviderProxy(Type providedType, Type providerType)
-            : base(providedType, providedType) {
+            : base(providedType, providedType)
+        {
             ProviderType = providerType;
         }
 
 
-        internal void SetProviderInstance(AbstractProvider provider) {
+        internal void SetProviderInstance(AbstractProvider provider)
+        {
             if (!IsInitialized) {
                 this.provider = provider;
                 IsInitialized = true;
-            } else {
-                throw new Exception("Attempted to SetProviderInstance to ProviderProxy Twice!");
             }
         }
 
-        protected override object ProvideObject() {
+        protected override object ProvideObject()
+        {
             return provider.Provide();
         }
     }

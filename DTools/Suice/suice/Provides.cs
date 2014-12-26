@@ -1,13 +1,15 @@
 using System;
 
-namespace CmnTools.Suice {
+namespace DTools.Suice
+{
     /// <summary>
-    /// Provider marks methods in Modules to provide instance a specific instance
+    /// Provider marks methods in Modules to specify methods that provide dependencies
     /// 
     /// @author DisTurBinG
     /// </summary>
     [AttributeUsage(AttributeTargets.Method)]
-    public class Provides : Attribute {
+    public class Provides : Attribute
+    {
         internal readonly Scope Scope;
 
         public Provides(Scope scope) {

@@ -1,18 +1,20 @@
-using System;
 using System.Collections.Generic;
 
-namespace CmnTools.Suice {
+namespace DTools.Suice
+{
     /// <summary>
     /// Implement Abstract Module to register custom binding rules
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public abstract class AbstractModule {
+    public abstract class AbstractModule
+    {
         private Injector injector;
 
         internal HashSet<IBinding> Bindings = new HashSet<IBinding>();
 
-        protected Binding<T> Bind<T>() {
+        protected IConfigurableBinding<T> Bind<T>() 
+        {
             Binding<T> binding = new Binding<T>();
             Bindings.Add(binding);
             return binding;

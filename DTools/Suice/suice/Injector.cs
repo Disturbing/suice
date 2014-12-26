@@ -2,60 +2,62 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
+using DTools.Suice.Exception;
 
-namespace CmnTools.Suice {
+namespace DTools.Suice
+{
     /// <summary>
     /// Suice Injection is Google's Guice port to C#.
     /// 
     /// Injector manages all dependencies within the Application.
-    /// Must call Init function after construction.
-    /// Automatically handles JIT Dependencies.
+    /// Must call Initialize function after construction.
     /// 
     /// Currently supports Providers, Singletons, Field Injection, ImplementedBy and ProvidedBy functionalities.
     /// 
-    /// Circular Dependency is not supported via Constructor Injection at this time.
+    /// Circular Dependency is not supported via Constructor Injection at this time.  Must use field injection for circular dependencies.
+    /// 
+    /// Documentation may be found: https://github.com/Disturbing/suice
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public class Injector {
+    public class Injector
+    {
         private const BindingFlags DEPENDENCY_VARIABLE_FLAGS = BindingFlags.NonPublic | BindingFlags.Instance;
 
         private readonly Dictionary<Type, AbstractProvider> providersMap = new Dictionary<Type, AbstractProvider>();
 
-        private readonly Dictionary<Type, IBinding> bindingMap = new Dictionary<Type, IBinding>();
+        public event Action<object> OnInitializeDependency;
 
-        public Action<object> OnInitializeDependency;
+        private List<Type> circularDependencyLockedTypes = new List<Type>();
 
-        private HashSet<Type> CircularDependencyLockedTypes = new HashSet<Type>();
-
-        public void Init() {
-            InjectDependencies();
+        public void Initialize(params Assembly[] assemblies)
+        {
+            InjectDependencies(assemblies);
         }
 
-        private void InjectDependencies() {
-            IEnumerable<Type> assemblyTypes = Assembly.GetExecutingAssembly().GetTypes();
+        private void InjectDependencies(Assembly[] assemblies)
+        {
+            foreach(Assembly assembly in assemblies) {
+                IEnumerable<Type> assemblyTypes = assembly.GetTypes();
 
-            RegisterJustInTimeDependencies(assemblyTypes);
+                RegisterJustInTimeDependencies(assemblyTypes);
 
-            foreach (KeyValuePair<Type, AbstractProvider> kvp in providersMap
-                .Where(x => !(x.Value is SingletonMethodProvider) && x.Value is SingletonProvider)) {
-                GetDependency(kvp.Key);
+                foreach (KeyValuePair<Type, AbstractProvider> kvp in providersMap
+                    .Where(x => !(x.Value is SingletonMethodProvider) && x.Value is SingletonProvider)) {
+                        GetDependency(kvp.Key);
+                }
             }
         }
 
-        public void RegisterModule(AbstractModule module) {
+        public void RegisterModule(AbstractModule module)
+        {
             module.Configure();
             RegisterBindings(module.Bindings);
             CreateProvidersFromMethods(module);
         }
 
-        private void CreateProvidersFromBindings(AbstractModule module) {
-            foreach (IBinding binding in module.Bindings) {
-                CreateProvider(binding);
-            }
-        }
-
-        private void CreateProvidersFromMethods(AbstractModule module) {
+        private void CreateProvidersFromMethods(AbstractModule module)
+        {
             foreach (MethodInfo methodInfo in module.GetType().GetMethodsWithAttribute<Provides>()) {
                 Provides provides = (Provides) Attribute.GetCustomAttribute(methodInfo, typeof (Provides));
 
@@ -63,34 +65,29 @@ namespace CmnTools.Suice {
                     RegisterProvider(methodInfo.ReturnType, new MethodProvider(module, methodInfo));
                 } else if (provides.Scope == Scope.SINGLETON) {
                     RegisterProvider(methodInfo.ReturnType, new SingletonMethodProvider(module, methodInfo));
-                } else {
-                    throw new Exception(string.Format(
-                        "AbstractModule {0}#{1} has unhandled scope type {2}",
-                        module.GetType().FullName,
-                        methodInfo.Name,
-                        provides.Scope));
                 }
             }
         }
 
-        private void RegisterProvider(Type bindedType, AbstractProvider provider) {
+        private void RegisterProvider(Type bindedType, AbstractProvider provider)
+        {
             try {
                 providersMap.Add(bindedType, provider);
             } catch (ArgumentException e) {
-                throw new Exception(
-                    string.Format("Attempted to bind {0} to {1} twice! May only specify one implementation type!",
-                                  bindedType,
-                                  provider.ProvidedType));
+                throw new DuplicateBindingException(bindedType.FullName, provider.ProvidedType.FullName,
+                    providersMap[bindedType].ImplementedType.FullName);
             }
         }
 
-        private void RegisterBindings(IEnumerable<IBinding> bindings) {
+        private void RegisterBindings(IEnumerable<IBinding> bindings)
+        {
             foreach (IBinding binding in bindings) {
                 CreateProvider(binding);
             }
         }
 
-        private object[] GetMethodDependencies(Type dependencyType, MethodBase methodInfo) {
+        private object[] GetMethodDependencies(Type dependencyType, MethodBase methodInfo)
+        {
             ParameterInfo[] parameterInfos = methodInfo.GetParameters();
             object[] parameters = new object[parameterInfos.Length];
 
@@ -98,8 +95,7 @@ namespace CmnTools.Suice {
                 Type parameterType = parameterInfos[i].ParameterType;
 
                 if (dependencyType == parameterType) {
-                    throw new Exception("Dependency " + dependencyType.FullName +
-                                        " is attempting to inject itself through method/constructor injection!");
+                    throw new InjectToSelfException(dependencyType.FullName);
                 }
 
                 parameters[i] = GetDependency(parameterType);
@@ -108,7 +104,8 @@ namespace CmnTools.Suice {
             return parameters;
         }
 
-        private FieldDependency[] GetFieldDependencies(Type type) {
+        private FieldDependency[] GetFieldDependencies(Type type)
+        {
             FieldInfo[] fieldInfos = type.GetFields(DEPENDENCY_VARIABLE_FLAGS)
                                          .Where(f => f.GetCustomAttributes(typeof (Inject), true).Length > 0).ToArray();
             FieldDependency[] fieldDependencies = new FieldDependency[fieldInfos.Length];
@@ -117,8 +114,7 @@ namespace CmnTools.Suice {
                 Type fieldType = fieldInfos[i].FieldType;
 
                 if (fieldType == type) {
-                    throw new Exception("Dependency " + type.FullName +
-                                        " is attempting to inject itself through field injection!");
+                    throw new InjectToSelfException(type.FullName);
                 }
 
                 fieldDependencies[i] = new FieldDependency(fieldInfos[i], GetDependency(fieldType));
@@ -127,7 +123,8 @@ namespace CmnTools.Suice {
             return fieldDependencies;
         }
 
-        private void CreateProvider(IBinding binding) {
+        private void CreateProvider(IBinding binding)
+        {
             if (binding.Scope == Scope.NO_SCOPE) {
                 RegisterProvider(binding.TypeToBind,
                                  new NoScopeProvider(binding.TypeToBind, binding.BindedType));
@@ -140,15 +137,11 @@ namespace CmnTools.Suice {
                 }
 
                 RegisterProvider(binding.TypeToBind, singletonProvider);
-            } else {
-                throw new Exception(string.Format(
-                    "Binding {0} has unhandled scope type {1}",
-                    binding.TypeToBind.FullName,
-                    binding.Scope));
             }
         }
 
-        private ConstructorInfo GetConstructor(Type bindedType) {
+        private ConstructorInfo GetConstructor(Type bindedType)
+        {
             ConstructorInfo[] constructorInfos = bindedType.GetConstructors();
             ConstructorInfo constructorInfo = null;
 
@@ -159,29 +152,34 @@ namespace CmnTools.Suice {
             }
 
             if (constructorInfo == null) {
-                throw new Exception(string.Format("Could not find valid constructor for type {0}." +
-                                                  "Must provide no constructor, an empty constructor, or a constructor with an [Inject] attribute!",
-                                                  bindedType.FullName));
+                throw new InvalidDependencyConstructorException(bindedType.FullName);
             }
 
             return constructorInfo;
         }
 
-        private bool IsValidConstructor(ConstructorInfo constructorInfo) {
+        private bool IsValidConstructor(ConstructorInfo constructorInfo)
+        {
             return constructorInfo.GetParameters().Length == 0 ||
                    constructorInfo.GetMemberInfoAttribute<Inject>() != null;
         }
 
-        private object GetDependency(Type type) {
+        private object GetDependency(Type type)
+        {
             AbstractProvider provider;
 
             if (!providersMap.TryGetValue(type, out provider)) {
-                throw new Exception("Attempted to get dependency: " + type.FullName + " that doesn't exist!");
+                throw new InvalidDependencyException(type.FullName);
             }
 
-            if (CircularDependencyLockedTypes.Contains(type)) {
-                throw new Exception("Detected Ciruclar Constructor Dependency for type: " + type +
-                                    ". Check all constructor dependencies !");
+            if (circularDependencyLockedTypes.Contains(type)) {
+                string circularDependencyMapStr = string.Empty;
+
+                for (int i = 0; i < circularDependencyLockedTypes.Count; i++) {
+                    circularDependencyMapStr += circularDependencyLockedTypes[i] + "->";
+                }
+
+                throw new CircularDependencyException(circularDependencyMapStr + type.FullName);
             }
 
             if (!provider.IsInitialized) {
@@ -197,42 +195,46 @@ namespace CmnTools.Suice {
             return dependency;
         }
 
-        private void InitializeAfterInstantiation(AbstractProvider provider, object dependency) {
+        private void InitializeAfterInstantiation(AbstractProvider provider, object dependency)
+        {
             InitializeDependencyFields(provider, dependency);
 
             BroadcastDependencyInitialization(dependency);
         }
 
-        private void PrepareInstantation(Type type, AbstractProvider provider) {
-            CircularDependencyLockedTypes.Add(type);
+        private void PrepareInstantation(Type type, AbstractProvider provider)
+        {
+            circularDependencyLockedTypes.Add(type);
 
             GenerateConstructorDependencyMap(type, provider);
 
             SingletonProvider singletonProvider = provider as SingletonProvider;
+
             if (singletonProvider != null) {
                 singletonProvider.CreateSingletonInstance();
             }
 
-            CircularDependencyLockedTypes.Remove(type);
+            circularDependencyLockedTypes.Remove(type);
         }
 
-        private void GenerateConstructorDependencyMap(Type type, AbstractProvider provider) {
+        private void GenerateConstructorDependencyMap(Type type, AbstractProvider provider)
+        {
             IMethodConstructor methodConstructor = provider as IMethodConstructor;
             ProviderProxy providerProxy = provider as ProviderProxy;
 
             if (providerProxy != null) {
-                providerProxy.SetProviderInstance(
-                    (AbstractProvider) GetDependency(providerProxy.ProviderType));
+                providerProxy.SetProviderInstance((AbstractProvider) GetDependency(providerProxy.ProviderType));
             } else if (methodConstructor != null) {
-                provider.SetConstructorDependencies(GetMethodDependencies(type,
+                provider.SetDependencies(GetMethodDependencies(type,
                                                                           methodConstructor.GetMethodConstructor()));
             } else {
-                provider.SetConstructorDependencies(GetMethodDependencies(provider.ProvidedType,
+                provider.SetDependencies(GetMethodDependencies(provider.ProvidedType,
                                                                           GetConstructor(provider.ImplementedType)));
             }
         }
 
-        private void InitializeDependencyFields(AbstractProvider provider, object dependency) {
+        private void InitializeDependencyFields(AbstractProvider provider, object dependency)
+        {
             provider.IsInitialized = true;
 
             FieldDependency[] fieldDependencies = GetFieldDependencies(dependency.GetType());
@@ -242,26 +244,17 @@ namespace CmnTools.Suice {
             }
         }
 
-        private void BroadcastDependencyInitialization(object dependency) {
-            InitializeDependency iDependency = dependency as InitializeDependency;
+        private void BroadcastDependencyInitialization(object dependency)
+        {
+            IAutoInitialize iAutoInitialize = dependency as IAutoInitialize;
 
-            if (iDependency != null) {
-                iDependency.Initialize();
+            if (iAutoInitialize != null) {
+                iAutoInitialize.Initialize();
             }
 
             if (OnInitializeDependency != null) {
                 OnInitializeDependency(dependency);
             }
-        }
-
-        private object[] GetDependencies(params Type[] types) {
-            object[] dependencies = new object[types.Length];
-
-            for (int i = 0; i < types.Length; i++) {
-                dependencies[i] = GetDependency(types[i]);
-            }
-
-            return dependencies;
         }
 
         private void RegisterJustInTimeDependencies(IEnumerable<Type> types) {
@@ -270,11 +263,13 @@ namespace CmnTools.Suice {
             }
         }
 
-        private bool AttemptRegisterDependency(Type type) {
+        private bool AttemptRegisterDependency(Type type)
+        {
             return AttemptRegisterBinding(type) || AttemptRegisterSingleton(type) || AttemptRegisterProvider(type);
         }
 
-        private bool AttemptRegisterSingleton(Type type) {
+        private bool AttemptRegisterSingleton(Type type)
+        {
             bool foundImplementedByInterface = type.GetInterfaces().Count(
                 iType => iType.GetTypeAttribute<ImplementedBy>() != null) > 0;
 
@@ -289,7 +284,8 @@ namespace CmnTools.Suice {
             return success;
         }
 
-        private bool AttemptRegisterProvider(Type type) {
+        private bool AttemptRegisterProvider(Type type)
+        {
             ProvidedBy providedBy = type.GetTypeAttribute<ProvidedBy>();
             bool success = providedBy != null;
 
@@ -312,17 +308,15 @@ namespace CmnTools.Suice {
 
                     RegisterProvider(type, providerProxy);
                 } else {
-                    throw new Exception(
-                        string.Format(
-                            "Provided invalid ProviderType to ProvidedBy attribute on Type: {0}.  Must provide IProvider class!",
-                            type.FullName));
+                    throw new InvalidProvidedByException(type.FullName);
                 }
             }
 
             return success;
         }
 
-        private bool AttemptRegisterBinding(Type type) {
+        private bool AttemptRegisterBinding(Type type)
+        {
             ImplementedBy implementedBy = type.GetTypeAttribute<ImplementedBy>();
             bool success = implementedBy != null;
 
@@ -331,12 +325,8 @@ namespace CmnTools.Suice {
                 bool isSingleton = bindedType.GetTypeAttribute<Singleton>() != null;
                 AbstractProvider provider;
 
-                if (!bindedType.GetInterfaces().Contains(type))
-                {
-                    throw new Exception(string.Format("ImplementedBy attribute on interface {0} " +
-                        "has invalid set implementation class: {1} which does not inherit {0}",
-                        type.FullName,
-                        bindedType.FullName));
+                if (!bindedType.GetInterfaces().Contains(type)) {
+                    throw new InvalidImplementedByException(type.FullName, bindedType.FullName);
                 }
 
                 if (isSingleton) {
@@ -349,25 +339,6 @@ namespace CmnTools.Suice {
             }
 
             return success;
-        }
-
-        private bool IsProvidedByProvider(Type type) {
-            bool isProvidedByProvider = false;
-
-            if (type.IsGenericType) {
-                isProvidedByProvider = type.GetGenericArguments().Count(t => t.GetTypeAttribute<ProvidedBy>() != null) >
-                                       0;
-            }
-
-            return isProvidedByProvider;
-        }
-
-        private static void InitializeDependency(object dependency) {
-            InitializeDependency initalizeDependency = dependency as InitializeDependency;
-
-            if (initalizeDependency != null) {
-                initalizeDependency.Initialize();
-            }
         }
     }
 }

@@ -1,14 +1,16 @@
 using System;
 
-namespace CmnTools.Suice {
+namespace DTools.Suice
+{
     /// <summary>
     /// Binding maps a dependency type to a implementation instance type.
-    /// Option to set specific instance to bind to.
+    /// Use ToInstance to manually map an instance for the type to be bound to.
     /// Default scope is NO_SCOPE
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public class Binding<T> : IBinding {
+    public class Binding<T> : IBoundBinding, IConfigurableBinding<T>
+    {
         public Type TypeToBind { get; private set; }
 
         public Type BindedType { get; private set; }
@@ -17,29 +19,31 @@ namespace CmnTools.Suice {
 
         public object BindedInstance { get; private set; }
 
-        public Binding() {
+        public Binding()
+        {
             TypeToBind = typeof (T);
             Scope = Scope.NO_SCOPE;
             BindedInstance = null;
         }
 
-        public Binding<T> To<V>()
-            where V : T {
+        public IBoundBinding To<V>() where V : T
+        {
             BindedType = typeof (V);
 
             return this;
         }
 
-        public Binding<T> In(Scope scope) {
-            Scope = scope;
-
-            return this;
-        }
-
-        public Binding<T> ToInstance(T binded) {
+        public IBoundBinding ToInstance(T binded)
+        {
             BindedInstance = binded;
             BindedType = binded.GetType();
             Scope = Scope.SINGLETON;
+            return this;
+        }
+
+        public IBinding In(Scope scope)
+        {
+            Scope = scope;
             return this;
         }
     }

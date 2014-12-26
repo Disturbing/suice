@@ -3,20 +3,22 @@ using System.Reflection;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace CmnTools.Suice {
+namespace DTools.Suice
+{
     /// <summary>
-    /// Helper class with reflection
+    /// Extensions for attribute and method information through Reflection
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public static class ReflectionUtil {
-        public static IEnumerable<MethodInfo> GetMethodsWithAttribute<T>(this Type type)
-            where T : Attribute {
+    public static class ReflectionExtensions
+    {
+        public static IEnumerable<MethodInfo> GetMethodsWithAttribute<T>(this Type type) where T : Attribute
+        {
             return type.GetMethods().Where(mi => Attribute.GetCustomAttribute(mi, typeof (T)) != null);
         }
 
-        public static T GetTypeAttribute<T>(this Type type, bool inherit = false)
-            where T : Attribute {
+        public static T GetTypeAttribute<T>(this Type type, bool inherit = false) where T : Attribute
+        {
             T typeAttribute = type.GetCustomAttributes(inherit).OfType<T>().FirstOrDefault();
 
             if (typeAttribute == null && inherit) {
@@ -30,8 +32,8 @@ namespace CmnTools.Suice {
             return typeAttribute;
         }
 
-        public static T GetMemberInfoAttribute<T>(this MemberInfo memberInfo, bool inherit = false)
-            where T : Attribute {
+        public static T GetMemberInfoAttribute<T>(this MemberInfo memberInfo, bool inherit = false) where T : Attribute
+        {
             return memberInfo.GetCustomAttributes(inherit).OfType<T>().FirstOrDefault();
         }
     }

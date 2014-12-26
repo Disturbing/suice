@@ -1,4 +1,5 @@
-﻿namespace CmnTools.Suice {
+﻿namespace DTools.Suice
+{
     /// <summary>
     /// Enumeration of Dependency scope types.
     /// 
@@ -7,7 +8,8 @@
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public enum Scope {
+    public enum Scope
+    {
         NO_SCOPE,
         SINGLETON
     }

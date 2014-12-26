@@ -8,6 +8,6 @@
     public interface IConfigurableBinding<T>
     {
         IBoundBinding To<V>() where V : T;
-        IBoundBinding ToInstance(T binded);
+        IBinding ToInstance(T binded);
     }
 }

@@ -33,7 +33,7 @@ namespace DTools.Suice
             return this;
         }
 
-        public IBoundBinding ToInstance(T binded)
+        public IBinding ToInstance(T binded)
         {
             BindedInstance = binded;
             BindedType = binded.GetType();

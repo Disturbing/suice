@@ -27,7 +27,6 @@ namespace DTools.Suice
         internal void SetInstance(object instance)
         {
             Instance = instance;
-            IsInitialized = true;
         }
 
         protected override object ProvideObject()

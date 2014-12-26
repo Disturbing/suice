@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 using System.Linq;
 using DTools.Suice.Exception;
@@ -133,7 +134,6 @@ namespace DTools.Suice
 
                 if (binding.BindedInstance != null) {
                     singletonProvider.SetInstance(binding.BindedInstance);
-                    singletonProvider.IsInitialized = true;
                 }
 
                 RegisterProvider(binding.TypeToBind, singletonProvider);
@@ -173,13 +173,7 @@ namespace DTools.Suice
             }
 
             if (circularDependencyLockedTypes.Contains(type)) {
-                string circularDependencyMapStr = string.Empty;
-
-                for (int i = 0; i < circularDependencyLockedTypes.Count; i++) {
-                    circularDependencyMapStr += circularDependencyLockedTypes[i] + "->";
-                }
-
-                throw new CircularDependencyException(circularDependencyMapStr + type.FullName);
+                throw new CircularDependencyException(GenerateCircularDependencyMapStr(type));
             }
 
             if (!provider.IsInitialized) {
@@ -195,8 +189,22 @@ namespace DTools.Suice
             return dependency;
         }
 
+        private string GenerateCircularDependencyMapStr(Type type)
+        {
+            string circularDependencyMapStr = string.Empty;
+
+            for (int i = 0; i < circularDependencyLockedTypes.Count; i++) {
+                circularDependencyMapStr += circularDependencyLockedTypes[i] + "->";
+            }
+
+            circularDependencyMapStr += type.FullName;
+            return circularDependencyMapStr;
+        }
+
         private void InitializeAfterInstantiation(AbstractProvider provider, object dependency)
         {
+            provider.IsInitialized = true;
+
             InitializeDependencyFields(provider, dependency);
 
             BroadcastDependencyInitialization(dependency);
@@ -206,7 +214,7 @@ namespace DTools.Suice
         {
             circularDependencyLockedTypes.Add(type);
 
-            GenerateConstructorDependencyMap(type, provider);
+            InitializeDependencies(type, provider);
 
             SingletonProvider singletonProvider = provider as SingletonProvider;
 
@@ -217,7 +225,7 @@ namespace DTools.Suice
             circularDependencyLockedTypes.Remove(type);
         }
 
-        private void GenerateConstructorDependencyMap(Type type, AbstractProvider provider)
+        private void InitializeDependencies(Type type, AbstractProvider provider)
         {
             IMethodConstructor methodConstructor = provider as IMethodConstructor;
             ProviderProxy providerProxy = provider as ProviderProxy;
@@ -225,18 +233,14 @@ namespace DTools.Suice
             if (providerProxy != null) {
                 providerProxy.SetProviderInstance((AbstractProvider) GetDependency(providerProxy.ProviderType));
             } else if (methodConstructor != null) {
-                provider.SetDependencies(GetMethodDependencies(type,
-                                                                          methodConstructor.GetMethodConstructor()));
+                provider.SetDependencies(GetMethodDependencies(type, methodConstructor.GetMethodConstructor()));
             } else {
-                provider.SetDependencies(GetMethodDependencies(provider.ProvidedType,
-                                                                          GetConstructor(provider.ImplementedType)));
+                provider.SetDependencies(GetMethodDependencies(provider.ProvidedType, GetConstructor(provider.ImplementedType)));
             }
         }
 
         private void InitializeDependencyFields(AbstractProvider provider, object dependency)
         {
-            provider.IsInitialized = true;
-
             FieldDependency[] fieldDependencies = GetFieldDependencies(dependency.GetType());
 
             foreach (FieldDependency fieldDependency in fieldDependencies) {

@@ -28,7 +28,6 @@ namespace DTools.Suice
         {
             if (Instance == null) {
                 Instance = methodInfo.Invoke(module, Dependencies);
-                IsInitialized = true;
             }
         }
     }

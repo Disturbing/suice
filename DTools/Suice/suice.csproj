@@ -58,7 +58,7 @@
     <Compile Include="suice\IConfigurableBinding.cs" />
     <Compile Include="suice\IMethodConstructor.cs" />
     <Compile Include="suice\ImplementedBy.cs" />
-    <Compile Include="suice\IAutoInitialize.cs" />
+    <Compile Include="suice\IInitializable.cs" />
     <Compile Include="suice\Inject.cs" />
     <Compile Include="suice\Injector.cs" />
     <Compile Include="suice\MethodProvider.cs" />

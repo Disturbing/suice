@@ -250,10 +250,10 @@ namespace DTools.Suice
 
         private void BroadcastDependencyInitialization(object dependency)
         {
-            IAutoInitialize iAutoInitialize = dependency as IAutoInitialize;
+            IInitializable iInitializable = dependency as IInitializable;
 
-            if (iAutoInitialize != null) {
-                iAutoInitialize.Initialize();
+            if (iInitializable != null) {
+                iInitializable.Initialize();
             }
 
             if (OnInitializeDependency != null) {

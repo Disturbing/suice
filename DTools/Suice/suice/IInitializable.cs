@@ -5,7 +5,7 @@
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public interface IAutoInitialize
+    public interface IInitializable
     {
         void Initialize();
     }

@@ -7,7 +7,7 @@ namespace DTools.Suice
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public class SingletonProvider : AbstractProvider
+    public class SingletonProvider : Provider
     {
         internal object Instance;
 

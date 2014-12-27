@@ -3,7 +3,7 @@ using System.Reflection;
 namespace DTools.Suice
 {
     /// <summary>
-    /// Singleton Method Provider provides dependencies from AbstractModule's @Provides methods with Singleton Scope
+    /// Singleton Method Factory provides dependencies from AbstractModule's @Provides methods with Singleton Scope
     /// 
     /// @author DisTurBinG
     /// </summary>

@@ -11,7 +11,7 @@
     internal class InvalidProvidedByException : System.Exception
     {
         private const string EXCEPTION_MESSAGE = "Provided invalid ProviderType to ProvidedBy Attribute on class: {0}." +
-                                                "Attribute must specficy an AbstractProvider implementation!";
+                                                "Attribute must specficy an Factory implementation!";
 
         public InvalidProvidedByException(string providedByInterface)
             : base(string.Format(EXCEPTION_MESSAGE, providedByInterface)) { }

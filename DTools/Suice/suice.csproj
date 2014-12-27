@@ -42,7 +42,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="suice\AbstractModule.cs" />
-    <Compile Include="suice\AbstractProvider.cs" />
+    <Compile Include="suice\Provider.cs" />
     <Compile Include="suice\Binding.cs" />
     <Compile Include="suice\Exception\CircularDependencyException.cs" />
     <Compile Include="suice\Exception\DuplicateBindingException.cs" />
@@ -52,6 +52,7 @@
     <Compile Include="suice\Exception\InvalidProvidedByException.cs" />
     <Compile Include="suice\Exception\InvalidImplementedByException.cs" />
     <Compile Include="suice\FieldDependency.cs" />
+    <Compile Include="suice\IAbstractProvider.cs" />
     <Compile Include="suice\IBinding.cs" />
     <Compile Include="suice\IBoundBinding.cs" />
     <Compile Include="suice\IConfigurableBinding.cs" />
@@ -63,7 +64,7 @@
     <Compile Include="suice\MethodProvider.cs" />
     <Compile Include="suice\NoScopeProvider.cs" />
     <Compile Include="suice\ProvidedBy.cs" />
-    <Compile Include="suice\Provider.cs" />
+    <Compile Include="suice\Factory.cs" />
     <Compile Include="suice\ProviderProxy.cs" />
     <Compile Include="suice\Provides.cs" />
     <Compile Include="suice\ReflectionUtil.cs" />

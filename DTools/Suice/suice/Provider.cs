@@ -1,19 +1,39 @@
+using System;
+
 namespace DTools.Suice
 {
     /// <summary>
-    /// Abstracted factory pattern for the Dependency Injector
+    /// Base class container for all dependencies.  Each dependency has a provider which manages 'providing' the object when requested.
+    /// Contains all information, including required dependency instances for the specfic object.
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public abstract class Provider<T> : AbstractProvider
+    public abstract class Provider : IProvider
     {
-        protected Provider() : base(typeof (T), typeof (T)) { }
+        protected object[] Dependencies { get; private set; }
 
-        protected override object ProvideObject()
+        public readonly Type ProvidedType;
+
+        public readonly Type ImplementedType;
+
+        internal bool IsInitialized;
+
+        protected Provider(Type providedType, Type implementedType)
         {
-            return Provide();
+            ProvidedType = providedType;
+            ImplementedType = implementedType;
         }
 
-        public new abstract T Provide();
+        internal void SetDependencies(object[] constructorDependencies)
+        {
+            Dependencies = constructorDependencies;
+        }
+
+        public object Provide()
+        {
+            return ProvideObject();
+        }
+
+        protected abstract object ProvideObject();
     }
 }

@@ -25,7 +25,7 @@ namespace DTools.Suice
     {
         private const BindingFlags DEPENDENCY_VARIABLE_FLAGS = BindingFlags.NonPublic | BindingFlags.Instance;
 
-        private readonly Dictionary<Type, AbstractProvider> providersMap = new Dictionary<Type, AbstractProvider>();
+        private readonly Dictionary<Type, Provider> providersMap = new Dictionary<Type, Provider>();
 
         public event Action<object> OnInitializeDependency;
 
@@ -43,7 +43,7 @@ namespace DTools.Suice
 
                 RegisterJustInTimeDependencies(assemblyTypes);
 
-                foreach (KeyValuePair<Type, AbstractProvider> kvp in providersMap
+                foreach (KeyValuePair<Type, Provider> kvp in providersMap
                     .Where(x => !(x.Value is SingletonMethodProvider) && x.Value is SingletonProvider)) {
                         GetDependency(kvp.Key);
                 }
@@ -70,7 +70,7 @@ namespace DTools.Suice
             }
         }
 
-        private void RegisterProvider(Type bindedType, AbstractProvider provider)
+        private void RegisterProvider(Type bindedType, Provider provider)
         {
             try {
                 providersMap.Add(bindedType, provider);
@@ -166,7 +166,7 @@ namespace DTools.Suice
 
         private object GetDependency(Type type)
         {
-            AbstractProvider provider;
+            Provider provider;
 
             if (!providersMap.TryGetValue(type, out provider)) {
                 throw new InvalidDependencyException(type.FullName);
@@ -201,16 +201,16 @@ namespace DTools.Suice
             return circularDependencyMapStr;
         }
 
-        private void InitializeAfterInstantiation(AbstractProvider provider, object dependency)
+        private void InitializeAfterInstantiation(Provider provider, object dependency)
         {
             provider.IsInitialized = true;
 
-            InitializeDependencyFields(provider, dependency);
+            InitializeDependencyFields(dependency);
 
             BroadcastDependencyInitialization(dependency);
         }
 
-        private void PrepareInstantation(Type type, AbstractProvider provider)
+        private void PrepareInstantation(Type type, Provider provider)
         {
             circularDependencyLockedTypes.Add(type);
 
@@ -225,13 +225,13 @@ namespace DTools.Suice
             circularDependencyLockedTypes.Remove(type);
         }
 
-        private void InitializeDependencies(Type type, AbstractProvider provider)
+        private void InitializeDependencies(Type type, Provider provider)
         {
             IMethodConstructor methodConstructor = provider as IMethodConstructor;
             ProviderProxy providerProxy = provider as ProviderProxy;
 
             if (providerProxy != null) {
-                providerProxy.SetProviderInstance((AbstractProvider) GetDependency(providerProxy.ProviderType));
+                providerProxy.SetProviderInstance((Provider) GetDependency(providerProxy.ProviderType));
             } else if (methodConstructor != null) {
                 provider.SetDependencies(GetMethodDependencies(type, methodConstructor.GetMethodConstructor()));
             } else {
@@ -239,7 +239,7 @@ namespace DTools.Suice
             }
         }
 
-        private void InitializeDependencyFields(AbstractProvider provider, object dependency)
+        private void InitializeDependencyFields(object dependency)
         {
             FieldDependency[] fieldDependencies = GetFieldDependencies(dependency.GetType());
 
@@ -300,7 +300,7 @@ namespace DTools.Suice
                                                    ? providedBy.ProviderType
                                                    : implementedBy.ImplementedType;
 
-                if (implementedProviderType.IsSubclassOf(typeof (AbstractProvider))) {
+                if (typeof(IProvider).IsAssignableFrom(implementedProviderType)) {
                     if (implementedProviderType.GetTypeAttribute<ImplementedBy>(true) == null &&
                         implementedProviderType.GetTypeAttribute<Singleton>(true) == null) {
                         SingletonProvider singletonProvider = new SingletonProvider(providedBy.ProviderType,
@@ -327,7 +327,7 @@ namespace DTools.Suice
             if (success) {
                 Type bindedType = implementedBy.ImplementedType;
                 bool isSingleton = bindedType.GetTypeAttribute<Singleton>() != null;
-                AbstractProvider provider;
+                Provider provider;
 
                 if (!bindedType.GetInterfaces().Contains(type)) {
                     throw new InvalidImplementedByException(type.FullName, bindedType.FullName);

@@ -3,7 +3,7 @@ using System;
 namespace DTools.Suice
 {
     /// <summary>
-    /// Provider marks methods in Modules to specify methods that provide dependencies
+    /// Factory marks methods in Modules to specify methods that provide dependencies
     /// 
     /// @author DisTurBinG
     /// </summary>

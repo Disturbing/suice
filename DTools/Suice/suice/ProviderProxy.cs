@@ -7,9 +7,9 @@ namespace DTools.Suice
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public class ProviderProxy : AbstractProvider
+    public class ProviderProxy : Provider
     {
-        private AbstractProvider provider;
+        private Provider provider;
 
         public readonly Type ProviderType;
 
@@ -20,7 +20,7 @@ namespace DTools.Suice
         }
 
 
-        internal void SetProviderInstance(AbstractProvider provider)
+        internal void SetProviderInstance(Provider provider)
         {
             if (!IsInitialized) {
                 this.provider = provider;

@@ -28,9 +28,7 @@ namespace suice_tests
         {
             public Container Container;
 
-            public override void Configure() {}
-
-            [Provides(Scope.SINGLETON)]
+            [Provides(Scope.EAGER_SINGLETON)]
             public Container ProvidesContainer(DependencyA depA, DependencyB depB)
             {
                 return Container = new Container(depA, depB);

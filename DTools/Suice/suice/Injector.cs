@@ -57,7 +57,7 @@ namespace DTools.Suice
         {
             foreach (SingletonProvider provider in providersMap.Values
                 .OfType<SingletonProvider>()
-                .Where(s => s.Scope == Scope.EAGER_SINGLETON)) {
+                .Where(s => s.Scope == Scope.EAGER_SINGLETON).ToArray()) {
                 GetDependency(provider.ImplementedType);
             }
         }
@@ -178,12 +178,27 @@ namespace DTools.Suice
             Provider provider;
 
             if (providersMap.TryGetValue(type, out provider) == false) {
-                throw new InvalidDependencyException(type.FullName);
+                if (type.IsAssignableToGenericType(typeof(IProvider<>))) {
+                    CreateDynamicProvider(type, out provider);
+                } else {
+                    throw new InvalidDependencyException(type.FullName);
+                }
             }
 
             return circularDependencyLockedTypes.Contains(type) 
                 ? CreateProxy(type)
                 : CreateDependency(type, provider);
+        }
+
+        private void CreateDynamicProvider(Type type, out Provider provider)
+        {
+            Type providedType = type.GetGenericArguments()[0];
+            Type dynamicProviderType = typeof(DynamicProvider<>).MakeGenericType(providedType);
+            providersMap.Add(type, provider = (Provider) Activator.CreateInstance(
+                dynamicProviderType,
+                new object[] {
+                    GetDependencyTypes(providedType)
+                }));
         }
 
         private object CreateDependency(Type type, Provider provider)

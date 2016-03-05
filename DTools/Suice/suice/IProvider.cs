@@ -1,3 +1,5 @@
+using System;
+
 namespace DTools.Suice
 {
     /// <summary>
@@ -8,5 +10,10 @@ namespace DTools.Suice
     internal interface IProvider
     {
         object Provide();
+    }
+
+    public interface IProvider<T> where T : class
+    {
+        T Provide();
     }
 }

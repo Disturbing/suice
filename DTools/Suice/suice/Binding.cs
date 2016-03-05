@@ -9,7 +9,7 @@ namespace DTools.Suice
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public class Binding<T> : IBoundBinding, IConfigurableBinding<T> where T : class
+    internal class Binding<T> : IBoundBinding, IConfigurableBinding<T> where T : class
     {
         public Type TypeToBind { get; private set; }
 

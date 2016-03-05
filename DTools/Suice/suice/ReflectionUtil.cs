@@ -10,7 +10,7 @@ namespace DTools.Suice
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public static class ReflectionExtensions
+    internal static class ReflectionExtensions
     {
         public static IEnumerable<MethodInfo> GetMethodsWithAttribute<T>(this Type type) where T : Attribute
         {

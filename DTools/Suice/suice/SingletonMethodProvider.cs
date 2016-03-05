@@ -8,7 +8,7 @@ namespace DTools.Suice
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public class SingletonMethodProvider : SingletonProvider
+    internal class SingletonMethodProvider : SingletonProvider
     {
         private readonly AbstractModule module;
         private readonly MethodInfo providerMethod;

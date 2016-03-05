@@ -7,7 +7,7 @@ namespace DTools.Suice
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public class SingletonProvider : Provider
+    internal class SingletonProvider : Provider
     {
         public readonly Scope Scope;
         internal object Instance;

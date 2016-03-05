@@ -5,7 +5,7 @@ namespace DTools.Suice
     /// Contains all information, including required dependency instances for the specfic object.
     /// 
     /// @author DisTurBinG
-    public interface IProvider
+    internal interface IProvider
     {
         object Provide();
     }

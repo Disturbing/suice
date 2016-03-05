@@ -8,7 +8,7 @@ namespace DTools.Suice
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public class MethodProvider : NoScopeProvider
+    internal class MethodProvider : NoScopeProvider
     {
         private readonly AbstractModule module;
         private readonly MethodInfo methodInfo;

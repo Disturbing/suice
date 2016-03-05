@@ -1,8 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using DTools.Suice.Exception;
 
 namespace DTools.Suice
 {
@@ -12,7 +8,7 @@ namespace DTools.Suice
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public abstract class Provider : IProvider
+    internal abstract class Provider : IProvider
     {
         public readonly object[] Dependencies;
         public readonly Type ProvidedType;

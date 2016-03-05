@@ -7,7 +7,7 @@ namespace DTools.Suice
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public class NoScopeProvider : Provider
+    internal class NoScopeProvider : Provider
     {
         public NoScopeProvider(Type providedType, Type[] dependencyTypes)
             : this(providedType, providedType, dependencyTypes) { }

@@ -20,6 +20,6 @@ namespace DTools.Suice
             return binding;
         }
 
-        public abstract void Configure();
+        protected internal virtual void Configure() { }
     }
 }

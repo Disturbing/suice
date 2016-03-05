@@ -15,7 +15,7 @@ namespace DTools.Suice
         public NoScopeProvider(Type providedType, Type implementedType)
             : base(providedType, implementedType) { }
 
-        protected override object ProvideObject()
+        public override object Provide()
         {
             return Activator.CreateInstance(ImplementedType, Dependencies);
         }

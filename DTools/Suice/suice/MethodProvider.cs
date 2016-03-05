@@ -7,7 +7,7 @@ namespace DTools.Suice
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public class MethodProvider : NoScopeProvider, IMethodConstructor
+    public class MethodProvider : NoScopeProvider, IMethodProvider
     {
         private readonly AbstractModule module;
         private readonly MethodInfo methodInfo;
@@ -19,12 +19,12 @@ namespace DTools.Suice
             this.methodInfo = methodInfo;
         }
 
-        protected override object ProvideObject()
+        public override object Provide()
         {
             return methodInfo.Invoke(module, Dependencies);
         }
 
-        public MethodInfo GetMethodConstructor()
+        public MethodInfo GetMethod()
         {
             return methodInfo;
         }

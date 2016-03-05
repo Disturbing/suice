@@ -24,6 +24,7 @@ namespace DTools.Suice
             if (typeAttribute == null && inherit) {
                 Type interfaceWithAttribute =
                     type.GetInterfaces().FirstOrDefault(i => i.GetTypeAttribute<T>(true) != null);
+                
                 if (interfaceWithAttribute != null) {
                     typeAttribute = interfaceWithAttribute.GetTypeAttribute<T>(true);
                 }

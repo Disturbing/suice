@@ -30,7 +30,13 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Castle.Core">
+      <HintPath>lib\Castle.Core.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -42,6 +48,8 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="suice\AbstractModule.cs" />
+    <Compile Include="suice\DynamicProxy\ProxyFactory.cs" />
+    <Compile Include="suice\DynamicProxy\ProxyInterceptor.cs" />
     <Compile Include="suice\Provider.cs" />
     <Compile Include="suice\Binding.cs" />
     <Compile Include="suice\Exception\CircularDependencyException.cs" />
@@ -56,7 +64,7 @@
     <Compile Include="suice\IBinding.cs" />
     <Compile Include="suice\IBoundBinding.cs" />
     <Compile Include="suice\IConfigurableBinding.cs" />
-    <Compile Include="suice\IMethodConstructor.cs" />
+    <Compile Include="suice\IMethodProvider.cs" />
     <Compile Include="suice\ImplementedBy.cs" />
     <Compile Include="suice\IInitializable.cs" />
     <Compile Include="suice\Inject.cs" />
@@ -64,7 +72,6 @@
     <Compile Include="suice\MethodProvider.cs" />
     <Compile Include="suice\NoScopeProvider.cs" />
     <Compile Include="suice\ProvidedBy.cs" />
-    <Compile Include="suice\Factory.cs" />
     <Compile Include="suice\ProviderProxy.cs" />
     <Compile Include="suice\Provides.cs" />
     <Compile Include="suice\ReflectionUtil.cs" />

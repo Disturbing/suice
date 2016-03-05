@@ -28,7 +28,7 @@ namespace DTools.Suice
             }
         }
 
-        protected override object ProvideObject()
+        public override object Provide()
         {
             return provider.Provide();
         }

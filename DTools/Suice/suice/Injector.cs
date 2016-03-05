@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reflection;
 using System.Linq;
+using DTools.Suice.DynamicProxy;
 using DTools.Suice.Exception;
 
 namespace DTools.Suice
@@ -29,7 +29,11 @@ namespace DTools.Suice
 
         public event Action<object> OnInitializeDependency;
 
-        private List<Type> circularDependencyLockedTypes = new List<Type>();
+        private readonly List<Type> circularDependencyLockedTypes = new List<Type>();
+
+        private readonly Dictionary<Type, ProxyInterceptor> proxies = new Dictionary<Type, ProxyInterceptor>(); 
+
+        private readonly ProxyFactory proxyFactory = new ProxyFactory();
 
         public void Initialize(params Assembly[] assemblies)
         {
@@ -44,7 +48,7 @@ namespace DTools.Suice
                 RegisterJustInTimeDependencies(assemblyTypes);
 
                 foreach (KeyValuePair<Type, Provider> kvp in providersMap
-                    .Where(x => !(x.Value is SingletonMethodProvider) && x.Value is SingletonProvider)) {
+                    .Where(x => (x.Value is SingletonMethodProvider) || x.Value is SingletonProvider)) {
                         GetDependency(kvp.Key);
                 }
             }
@@ -128,15 +132,10 @@ namespace DTools.Suice
         {
             if (binding.Scope == Scope.NO_SCOPE) {
                 RegisterProvider(binding.TypeToBind,
-                                 new NoScopeProvider(binding.TypeToBind, binding.BindedType));
+                    new NoScopeProvider(binding.TypeToBind, binding.BindedType));
             } else if (binding.Scope == Scope.SINGLETON) {
-                SingletonProvider singletonProvider = new SingletonProvider(binding.TypeToBind, binding.BindedType);
-
-                if (binding.BindedInstance != null) {
-                    singletonProvider.SetInstance(binding.BindedInstance);
-                }
-
-                RegisterProvider(binding.TypeToBind, singletonProvider);
+                RegisterProvider(binding.TypeToBind,
+                    new SingletonProvider(binding.TypeToBind, binding.BindedType, binding.BindedInstance));
             }
         }
 
@@ -168,14 +167,17 @@ namespace DTools.Suice
         {
             Provider provider;
 
-            if (!providersMap.TryGetValue(type, out provider)) {
+            if (providersMap.TryGetValue(type, out provider) == false) {
                 throw new InvalidDependencyException(type.FullName);
             }
 
-            if (circularDependencyLockedTypes.Contains(type)) {
-                throw new CircularDependencyException(GenerateCircularDependencyMapStr(type));
-            }
+            return circularDependencyLockedTypes.Contains(type) 
+                ? CreateProxy(type)
+                : CreateDependency(type, provider);
+        }
 
+        private object CreateDependency(Type type, Provider provider)
+        {
             if (!provider.IsInitialized) {
                 PrepareInstantation(type, provider);
             }
@@ -185,20 +187,16 @@ namespace DTools.Suice
             if (!provider.IsInitialized || provider is NoScopeProvider) {
                 InitializeAfterInstantiation(provider, dependency);
             }
-
             return dependency;
         }
 
-        private string GenerateCircularDependencyMapStr(Type type)
+        private object CreateProxy(Type type)
         {
-            string circularDependencyMapStr = string.Empty;
+            ProxyInterceptor proxyInterceptor;
+            object dependency = proxyFactory.CreateTransparentInterfaceProxy(type, out proxyInterceptor);
+            proxies.Add(type, proxyInterceptor);
 
-            for (int i = 0; i < circularDependencyLockedTypes.Count; i++) {
-                circularDependencyMapStr += circularDependencyLockedTypes[i] + "->";
-            }
-
-            circularDependencyMapStr += type.FullName;
-            return circularDependencyMapStr;
+            return dependency;
         }
 
         private void InitializeAfterInstantiation(Provider provider, object dependency)
@@ -207,7 +205,15 @@ namespace DTools.Suice
 
             InitializeDependencyFields(dependency);
 
+            ProxyInterceptor changeProxyInterceptorTarget;
+
+            if (proxies.TryGetValue(provider.ProvidedType, out changeProxyInterceptorTarget)) {
+                changeProxyInterceptorTarget.Initialize(dependency);
+            }
+
             BroadcastDependencyInitialization(dependency);
+
+
         }
 
         private void PrepareInstantation(Type type, Provider provider)
@@ -216,24 +222,18 @@ namespace DTools.Suice
 
             InitializeDependencies(type, provider);
 
-            SingletonProvider singletonProvider = provider as SingletonProvider;
-
-            if (singletonProvider != null) {
-                singletonProvider.CreateSingletonInstance();
-            }
-
             circularDependencyLockedTypes.Remove(type);
         }
 
         private void InitializeDependencies(Type type, Provider provider)
         {
-            IMethodConstructor methodConstructor = provider as IMethodConstructor;
+            IMethodProvider methodProvider = provider as IMethodProvider;
             ProviderProxy providerProxy = provider as ProviderProxy;
 
             if (providerProxy != null) {
                 providerProxy.SetProviderInstance((Provider) GetDependency(providerProxy.ProviderType));
-            } else if (methodConstructor != null) {
-                provider.SetDependencies(GetMethodDependencies(type, methodConstructor.GetMethodConstructor()));
+            } else if (methodProvider != null) {
+                provider.SetDependencies(GetMethodDependencies(type, methodProvider.GetMethod()));
             } else {
                 provider.SetDependencies(GetMethodDependencies(provider.ProvidedType, GetConstructor(provider.ImplementedType)));
             }
@@ -303,9 +303,9 @@ namespace DTools.Suice
                 if (typeof(IProvider).IsAssignableFrom(implementedProviderType)) {
                     if (implementedProviderType.GetTypeAttribute<ImplementedBy>(true) == null &&
                         implementedProviderType.GetTypeAttribute<Singleton>(true) == null) {
-                        SingletonProvider singletonProvider = new SingletonProvider(providedBy.ProviderType,
-                                                                                    implementedProviderType);
-                        RegisterProvider(providedBy.ProviderType, singletonProvider);
+
+                        RegisterProvider(providedBy.ProviderType,
+                            new SingletonProvider(providedBy.ProviderType, implementedProviderType));
                     }
 
                     ProviderProxy providerProxy = new ProviderProxy(type, providedBy.ProviderType);

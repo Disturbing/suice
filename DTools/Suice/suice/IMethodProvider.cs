@@ -7,8 +7,8 @@ namespace DTools.Suice
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public interface IMethodConstructor
+    public interface IMethodProvider
     {
-        MethodInfo GetMethodConstructor();
+        MethodInfo GetMethod();
     }
 }

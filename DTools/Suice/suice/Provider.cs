@@ -29,11 +29,6 @@ namespace DTools.Suice
             Dependencies = constructorDependencies;
         }
 
-        public object Provide()
-        {
-            return ProvideObject();
-        }
-
-        protected abstract object ProvideObject();
+        public abstract object Provide();
     }
 }

@@ -7,7 +7,7 @@ namespace DTools.Suice
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public class SingletonMethodProvider : SingletonProvider, IMethodConstructor
+    public class SingletonMethodProvider : SingletonProvider, IMethodProvider
     {
         private readonly AbstractModule module;
         private readonly MethodInfo methodInfo;
@@ -19,16 +19,14 @@ namespace DTools.Suice
             this.methodInfo = methodInfo;
         }
 
-        public MethodInfo GetMethodConstructor()
+        public MethodInfo GetMethod()
         {
             return methodInfo;
         }
 
-        internal override void CreateSingletonInstance()
+        public override object Provide()
         {
-            if (Instance == null) {
-                Instance = methodInfo.Invoke(module, Dependencies);
-            }
+            return Instance ?? (Instance = methodInfo.Invoke(module, Dependencies));
         }
     }
 }

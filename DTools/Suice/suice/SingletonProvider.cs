@@ -14,24 +14,15 @@ namespace DTools.Suice
         public SingletonProvider(Type providedType)
             : this(providedType, providedType) { }
 
-        public SingletonProvider(Type providedType, Type implementedType)
-            : base(providedType, implementedType) { }
-
-        internal virtual void CreateSingletonInstance()
+        public SingletonProvider(Type providedType, Type implementedType, object defualtInstance = null)
+            : base(providedType, implementedType)
         {
-            if (Instance == null) {
-                SetInstance(Activator.CreateInstance(ImplementedType, Dependencies));
-            }
+            Instance = defualtInstance;
         }
 
-        internal void SetInstance(object instance)
+        public override object Provide()
         {
-            Instance = instance;
-        }
-
-        protected override object ProvideObject()
-        {
-            return Instance;
+            return Instance ?? (Instance = Activator.CreateInstance(ImplementedType, Dependencies));
         }
     }
 }

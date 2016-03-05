@@ -1,4 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using DTools.Suice.Exception;
 
 namespace DTools.Suice
 {
@@ -10,23 +14,19 @@ namespace DTools.Suice
     /// </summary>
     public abstract class Provider : IProvider
     {
-        protected object[] Dependencies { get; private set; }
-
+        public readonly object[] Dependencies;
         public readonly Type ProvidedType;
-
         public readonly Type ImplementedType;
+        public readonly Type[] DependencyTypes; 
 
         internal bool IsInitialized;
 
-        protected Provider(Type providedType, Type implementedType)
+        protected Provider(Type providedType, Type implementedType, Type[] dependencyTypes)
         {
             ProvidedType = providedType;
             ImplementedType = implementedType;
-        }
-
-        internal void SetDependencies(object[] constructorDependencies)
-        {
-            Dependencies = constructorDependencies;
+            DependencyTypes = dependencyTypes;
+            Dependencies = new object[dependencyTypes.Length];
         }
 
         public abstract object Provide();

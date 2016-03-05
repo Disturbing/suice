@@ -8,5 +8,18 @@ namespace DTools.Suice
     /// @author DisTurBinG
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    public class Singleton : Attribute { }
+    public class Singleton : Attribute
+    {
+        public Scope Scope;
+        private class InvalidSingletonScopeException : System.Exception { }
+
+        public Singleton(Scope scope = Suice.Scope.SINGLETON)
+        {
+            if (scope == Scope.NO_SCOPE) {
+                throw new InvalidSingletonScopeException();
+            }
+
+            Scope = scope;
+        }
+    }
 }

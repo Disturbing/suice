@@ -3,14 +3,21 @@
     /// <summary>
     /// Enumeration of Dependency scope types.
     /// 
-    /// NO_SCOPE will create a new instance of a dependency everytime it is requested.
-    /// SINGLETON will create a single instance and return only that instance when the dependency is requested.
-    /// 
     /// @author DisTurBinG
     /// </summary>
     public enum Scope
     {
+        /// <summary>
+        /// Creates a new instance EVERY TIME the dependency is requested.
+        /// </summary>
         NO_SCOPE,
-        SINGLETON
+        /// <summary>
+        /// will create a single instance and only return that instance when the dependency is requested.
+        /// </summary>
+        SINGLETON,
+        /// <summary>
+        /// Create a singleton at the startup of the application, even if it is not a dependency of another type.
+        /// </summary>
+        EAGER_SINGLETON
     }
 }

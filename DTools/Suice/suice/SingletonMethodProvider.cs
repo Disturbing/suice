@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 
 namespace DTools.Suice
@@ -7,26 +8,20 @@ namespace DTools.Suice
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public class SingletonMethodProvider : SingletonProvider, IMethodProvider
+    public class SingletonMethodProvider : SingletonProvider
     {
         private readonly AbstractModule module;
-        private readonly MethodInfo methodInfo;
+        private readonly MethodInfo providerMethod;
 
-        public SingletonMethodProvider(AbstractModule module, MethodInfo methodInfo)
-            : base(methodInfo.ReturnType)
+        public SingletonMethodProvider(Scope scope, AbstractModule module, MethodInfo providerMethod, Type[] dependencyTypes)
+            : base(scope, providerMethod.ReturnType, dependencyTypes)
         {
             this.module = module;
-            this.methodInfo = methodInfo;
+            this.providerMethod = providerMethod;
         }
-
-        public MethodInfo GetMethod()
-        {
-            return methodInfo;
-        }
-
         public override object Provide()
         {
-            return Instance ?? (Instance = methodInfo.Invoke(module, Dependencies));
+            return Instance ?? (Instance = providerMethod.Invoke(module, Dependencies));
         }
     }
 }

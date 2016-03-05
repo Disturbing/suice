@@ -9,14 +9,16 @@ namespace DTools.Suice
     /// </summary>
     public class SingletonProvider : Provider
     {
+        public readonly Scope Scope;
         internal object Instance;
 
-        public SingletonProvider(Type providedType)
-            : this(providedType, providedType) { }
+        public SingletonProvider(Scope scope, Type providedType, Type[] dependencyTypes)
+            : this(scope, providedType, providedType, dependencyTypes) { }
 
-        public SingletonProvider(Type providedType, Type implementedType, object defualtInstance = null)
-            : base(providedType, implementedType)
+        public SingletonProvider(Scope scope, Type providedType, Type implementedType, Type[] dependencyTypes, object defualtInstance = null)
+            : base(providedType, implementedType, dependencyTypes)
         {
+            Scope = scope;
             Instance = defualtInstance;
         }
 

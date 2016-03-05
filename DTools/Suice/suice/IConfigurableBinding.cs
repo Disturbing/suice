@@ -5,7 +5,7 @@
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public interface IConfigurableBinding<T>
+    public interface IConfigurableBinding<T> where T : class
     {
         IBoundBinding To<V>() where V : T;
         IBinding ToInstance(T binded);

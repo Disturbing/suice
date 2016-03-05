@@ -9,11 +9,11 @@ namespace DTools.Suice
     /// </summary>
     public class NoScopeProvider : Provider
     {
-        public NoScopeProvider(Type providedType)
-            : this(providedType, providedType) { }
+        public NoScopeProvider(Type providedType, Type[] dependencyTypes)
+            : this(providedType, providedType, dependencyTypes) { }
 
-        public NoScopeProvider(Type providedType, Type implementedType)
-            : base(providedType, implementedType) { }
+        public NoScopeProvider(Type providedType, Type implementedType, Type[] dependencyTypes)
+            : base(providedType, implementedType, dependencyTypes) { }
 
         public override object Provide()
         {

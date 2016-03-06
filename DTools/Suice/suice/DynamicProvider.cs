@@ -11,14 +11,17 @@ namespace DTools.Suice
     internal class DynamicProvider<T> : NoScopeProvider, IProvider<T> where T : class
     {
         public DynamicProvider(Type[] dependencyTypes)
-            : base(typeof(T), typeof(T), dependencyTypes)
-        {
-            
-        }
+            : base(typeof(T), typeof(T), dependencyTypes) { }
 
         T IProvider<T>.Provide()
         {
-            return (T) base.Provide();
+            T instance = (T) base.Provide();
+
+            if (instance is IInitializable) {
+                ((IInitializable)instance).Initialize();
+            }
+
+            return instance;
         }
 
         public override object Provide()

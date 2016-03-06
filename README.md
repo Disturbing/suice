@@ -24,7 +24,7 @@ public class MainAppClass
 	private static void SetupInjector()
 	{
 		injector = new Injector();
-		RegisterModules(_injector);
+		RegisterModules(injector);
 		injector.Init();
 	}
 

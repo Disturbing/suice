@@ -58,7 +58,6 @@
     <Compile Include="suice\Exception\InjectToSelfException.cs" />
     <Compile Include="suice\Exception\InvalidDependencyConstructorException.cs" />
     <Compile Include="suice\Exception\InvalidDependencyException.cs" />
-    <Compile Include="suice\Exception\InvalidProvidedByException.cs" />
     <Compile Include="suice\Exception\InvalidImplementedByException.cs" />
     <Compile Include="suice\FieldDependency.cs" />
     <Compile Include="suice\IProvider.cs" />

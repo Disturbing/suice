@@ -215,7 +215,7 @@ public class ShopItem
 }
 ```
 
-One feature to note
+One feature to note, in the future, we should be able to pass dynamic constructor requirements through the IProvider.  IE: provider.Provide(template) which will allow dynamic constructor reqs + injectable. Guice has it, suice should too :).
 
  
 

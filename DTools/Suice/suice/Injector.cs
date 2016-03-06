@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
+using Castle.DynamicProxy.Generators;
 using DTools.Suice.DynamicProxy;
 using DTools.Suice.Exception;
 
@@ -190,11 +191,19 @@ namespace DTools.Suice
         private void CreateDynamicProvider(Type type, out Provider provider)
         {
             Type providedType = type.GetGenericArguments()[0];
+            ImplementedBy implementedBy = providedType.GetTypeAttribute<ImplementedBy>();
+
+            Type implementedType = (implementedBy == null)
+                ? providedType
+                : implementedBy.ImplementedType;
+
             Type dynamicProviderType = typeof(DynamicProvider<>).MakeGenericType(providedType);
             providersMap.Add(type, provider = (Provider) Activator.CreateInstance(
                 dynamicProviderType,
                 new object[] {
-                    GetDependencyTypes(providedType)
+                    providedType,
+                    implementedType,
+                    GetDependencyTypes(implementedType)
                 }));
         }
 

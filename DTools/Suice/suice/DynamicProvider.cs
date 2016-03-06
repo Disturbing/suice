@@ -10,8 +10,8 @@ namespace DTools.Suice
     /// <typeparam name="T"></typeparam>
     internal class DynamicProvider<T> : NoScopeProvider, IProvider<T> where T : class
     {
-        public DynamicProvider(Type[] dependencyTypes)
-            : base(typeof(T), typeof(T), dependencyTypes) { }
+        public DynamicProvider(Type providedType, Type implementedType, Type[] dependencyTypes)
+            : base(providedType, implementedType, dependencyTypes) { }
 
         T IProvider<T>.Provide()
         {

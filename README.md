@@ -1,4 +1,4 @@
-# Suice – The Ultimate C# Dependency Injection Framework
+# Suice – The Ultimate C# Dependency Injection Framework "Inspired my Google's Guice"
 
 ## Overview
 The Suice project is an open-source project with the goal of creating an efficient Just In Time (JIT) dependency injection framework with the same awesome features Google’s Guice.

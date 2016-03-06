@@ -1,5 +1,3 @@
-using System;
-
 namespace DTools.Suice
 {
     /// <summary>

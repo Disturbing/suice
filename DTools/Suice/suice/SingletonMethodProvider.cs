@@ -19,6 +19,7 @@ namespace DTools.Suice
             this.module = module;
             this.providerMethod = providerMethod;
         }
+
         public override object Provide()
         {
             return Instance ?? (Instance = providerMethod.Invoke(module, Dependencies));

@@ -30,14 +30,11 @@ namespace DTools.Suice
     {
         private const BindingFlags DEPENDENCY_VARIABLE_FLAGS = BindingFlags.NonPublic | BindingFlags.Instance;
 
-        private readonly Dictionary<Type, Provider> providersMap = new Dictionary<Type, Provider>();
-
         public event Action<object> OnInitializeDependency;
-
+        
+        private readonly Dictionary<Type, Provider> providersMap = new Dictionary<Type, Provider>();
         private readonly List<Type> circularDependencyLockedTypes = new List<Type>();
-
         private readonly Dictionary<Type, ProxyInterceptor> proxies = new Dictionary<Type, ProxyInterceptor>(); 
-
         private readonly ProxyFactory proxyFactory = new ProxyFactory();
 
         public void Initialize(params Assembly[] assemblies)

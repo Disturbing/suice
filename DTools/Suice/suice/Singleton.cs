@@ -10,10 +10,11 @@ namespace DTools.Suice
     [AttributeUsage(AttributeTargets.Class)]
     public class Singleton : Attribute
     {
-        public Scope Scope;
         private class InvalidSingletonScopeException : System.Exception { }
 
-        public Singleton(Scope scope = Suice.Scope.SINGLETON)
+        public readonly Scope Scope;
+
+        public Singleton(Scope scope = Scope.SINGLETON)
         {
             if (scope == Scope.NO_SCOPE) {
                 throw new InvalidSingletonScopeException();

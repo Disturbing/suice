@@ -56,7 +56,7 @@ namespace DTools.Suice
             foreach (SingletonProvider provider in providersMap.Values
                 .OfType<SingletonProvider>()
                 .Where(s => s.Scope == Scope.EAGER_SINGLETON).ToArray()) {
-                GetDependency(provider.ImplementedType);
+                GetDependency(provider.ProvidedType);
             }
         }
 

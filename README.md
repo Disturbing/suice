@@ -181,9 +181,9 @@ public class ShopService
 	private readonly IProvider<ShopItem> shopItemProvider;
 	private readonly PopupService popupService;
 	
-	public ShopService(IProvider<ShopItem> shopItems, PopupService popupService)
+	public ShopService(IProvider<ShopItem> shopItemProvider, PopupService popupService)
 	{
-		this.shopItems = shopItems;
+		this.shopItemProvider = shopItemProvider;
 		this.popupService = popupService;
 	}
 	

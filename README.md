@@ -2,7 +2,7 @@
 
 ## Overview
 The Suice project is an open-source project with the goal of creating an efficient Just In Time (JIT) dependency injection framework with the same awesome features Google’s Guice.
-Suice provides a strong depdency injection framework which will aid you in creating great test driven APIs. Destroying design patterns such as the singleton and replacing the ‘new’ keyword with [Inject] and factories will aid you in creating clean testable code.
+Suice provides a strong DI framework which will aid you in creating great test driven APIs. Destroying design patterns such as the singleton and replacing the ‘new’ keyword with [Inject] and factories will aid you in creating clean testable code.
 
 ## Startup and Setup
 The Suice framework begins with the Injector class.  You must first instantiate an injector instance and register desired modules.

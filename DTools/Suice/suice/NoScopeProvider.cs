@@ -17,7 +17,7 @@ namespace DTools.Suice
 
         public override object Provide()
         {
-            return Activator.CreateInstance(ImplementedType, Dependencies);
+            return ImplementedType.New(Dependencies);
         }
     }
 }

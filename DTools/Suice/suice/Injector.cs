@@ -198,13 +198,11 @@ namespace DTools.Suice
                 : implementedBy.ImplementedType;
 
             Type dynamicProviderType = typeof(DynamicProvider<>).MakeGenericType(providedType);
-            providersMap.Add(type, provider = (Provider) Activator.CreateInstance(
-                dynamicProviderType,
-                new object[] {
-                    providedType,
-                    implementedType,
-                    GetDependencyTypes(implementedType)
-                }));
+            providersMap.Add(type, provider = (Provider) dynamicProviderType.New(
+                providedType,
+                implementedType,
+                GetDependencyTypes(implementedType)
+                ));
         }
 
         private object CreateDependency(Type type, Provider provider)

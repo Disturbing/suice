@@ -76,6 +76,7 @@
     <Compile Include="suice\Singleton.cs" />
     <Compile Include="suice\SingletonMethodProvider.cs" />
     <Compile Include="suice\SingletonProvider.cs" />
+    <Compile Include="suice\Utilities\InstanceCreatorExtension.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

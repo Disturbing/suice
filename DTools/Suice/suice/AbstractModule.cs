@@ -13,13 +13,13 @@ namespace DTools.Suice
 
         internal HashSet<IBinding> Bindings = new HashSet<IBinding>();
 
-        protected IConfigurableBinding<T> Bind<T>() 
+        protected IConfigurableBinding<T> Bind<T>()  where T : class
         {
             Binding<T> binding = new Binding<T>();
             Bindings.Add(binding);
             return binding;
         }
 
-        public abstract void Configure();
+        protected internal virtual void Configure() { }
     }
 }

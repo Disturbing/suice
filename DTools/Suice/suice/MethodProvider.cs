@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 
 namespace DTools.Suice
@@ -7,26 +8,21 @@ namespace DTools.Suice
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public class MethodProvider : NoScopeProvider, IMethodConstructor
+    internal class MethodProvider : NoScopeProvider
     {
         private readonly AbstractModule module;
         private readonly MethodInfo methodInfo;
 
-        public MethodProvider(AbstractModule module, MethodInfo methodInfo)
-            : base(methodInfo.ReturnType)
+        public MethodProvider(AbstractModule module, MethodInfo methodInfo, Type[] dependencyTypes)
+            : base(methodInfo.ReturnType, dependencyTypes)
         {
             this.module = module;
             this.methodInfo = methodInfo;
         }
 
-        protected override object ProvideObject()
+        public override object Provide()
         {
             return methodInfo.Invoke(module, Dependencies);
-        }
-
-        public MethodInfo GetMethodConstructor()
-        {
-            return methodInfo;
         }
     }
 }

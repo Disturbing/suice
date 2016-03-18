@@ -7,15 +7,15 @@ namespace DTools.Suice
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public class NoScopeProvider : Provider
+    internal class NoScopeProvider : Provider
     {
-        public NoScopeProvider(Type providedType)
-            : this(providedType, providedType) { }
+        public NoScopeProvider(Type providedType, Type[] dependencyTypes)
+            : this(providedType, providedType, dependencyTypes) { }
 
-        public NoScopeProvider(Type providedType, Type implementedType)
-            : base(providedType, implementedType) { }
+        public NoScopeProvider(Type providedType, Type implementedType, Type[] dependencyTypes)
+            : base(providedType, implementedType, dependencyTypes) { }
 
-        protected override object ProvideObject()
+        public override object Provide()
         {
             return Activator.CreateInstance(ImplementedType, Dependencies);
         }

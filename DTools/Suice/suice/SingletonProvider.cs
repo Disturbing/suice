@@ -7,31 +7,24 @@ namespace DTools.Suice
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public class SingletonProvider : Provider
+    internal class SingletonProvider : Provider
     {
+        public readonly Scope Scope;
         internal object Instance;
 
-        public SingletonProvider(Type providedType)
-            : this(providedType, providedType) { }
+        public SingletonProvider(Scope scope, Type providedType, Type[] dependencyTypes)
+            : this(scope, providedType, providedType, dependencyTypes) { }
 
-        public SingletonProvider(Type providedType, Type implementedType)
-            : base(providedType, implementedType) { }
-
-        internal virtual void CreateSingletonInstance()
+        public SingletonProvider(Scope scope, Type providedType, Type implementedType, Type[] dependencyTypes, object defualtInstance = null)
+            : base(providedType, implementedType, dependencyTypes)
         {
-            if (Instance == null) {
-                SetInstance(Activator.CreateInstance(ImplementedType, Dependencies));
-            }
+            Scope = scope;
+            Instance = defualtInstance;
         }
 
-        internal void SetInstance(object instance)
+        public override object Provide()
         {
-            Instance = instance;
-        }
-
-        protected override object ProvideObject()
-        {
-            return Instance;
+            return Instance ?? (Instance = Activator.CreateInstance(ImplementedType, Dependencies));
         }
     }
 }

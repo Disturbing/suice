@@ -8,32 +8,23 @@ namespace DTools.Suice
     /// 
     /// @author DisTurBinG
     /// </summary>
-    public abstract class Provider : IProvider
+    internal abstract class Provider : IProvider
     {
-        protected object[] Dependencies { get; private set; }
-
+        public readonly object[] Dependencies;
         public readonly Type ProvidedType;
-
         public readonly Type ImplementedType;
+        public readonly Type[] DependencyTypes; 
 
         internal bool IsInitialized;
 
-        protected Provider(Type providedType, Type implementedType)
+        protected Provider(Type providedType, Type implementedType, Type[] dependencyTypes)
         {
             ProvidedType = providedType;
             ImplementedType = implementedType;
+            DependencyTypes = dependencyTypes;
+            Dependencies = new object[dependencyTypes.Length];
         }
 
-        internal void SetDependencies(object[] constructorDependencies)
-        {
-            Dependencies = constructorDependencies;
-        }
-
-        public object Provide()
-        {
-            return ProvideObject();
-        }
-
-        protected abstract object ProvideObject();
+        public abstract object Provide();
     }
 }

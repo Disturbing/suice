@@ -20,26 +20,27 @@ internal static class InstanceCreatorExtensions
     {
         Type[] argTypes = args.Select(a => a.GetType()).ToArray();
 
-        var ctor = type.GetConstructor(argTypes);
+        ConstructorInfo constructorInfo = type.GetConstructor(argTypes);
+        ObjectActivator activator = GetActivator(constructorInfo);
 
-        return GetActivator(ctor)(args);
+        return activator(args);
     }
 
     internal delegate object ObjectActivator(params object[] args);
 
     private static Dictionary<ConstructorInfo, object> _activators = new Dictionary<ConstructorInfo, object>();
 
-    internal static ObjectActivator GetActivator(ConstructorInfo ctor)
+    internal static ObjectActivator GetActivator(ConstructorInfo constructorInfo)
     {
         object activator;
-        if (_activators.TryGetValue(ctor, out activator)) return (ObjectActivator)activator;
+        if (_activators.TryGetValue(constructorInfo, out activator)) return (ObjectActivator)activator;
 
-        ParameterInfo[] paramsInfo = ctor.GetParameters();
+        ParameterInfo[] paramsInfo = constructorInfo.GetParameters();
 
         //create a single param of type object[]
         ParameterExpression param = Expression.Parameter(typeof(object[]), "args");
 
-        var argsExp = new Expression[paramsInfo.Length];
+        Expression[] argsExp = new Expression[paramsInfo.Length];
 
         //pick each arg from the params array
         //and create a typed expression of them
@@ -54,16 +55,16 @@ internal static class InstanceCreatorExtensions
             argsExp[i] = paramCastExp;
         }
 
-        //make a NewExpression that calls the ctor with the args we just created
-        NewExpression newExp = Expression.New(ctor, argsExp);
+        //make a NewExpression that calls the constructor with the args we just created
+        NewExpression newExp = Expression.New(constructorInfo, argsExp);
 
         //create a lambda with the NewExpression as body and our param object[] as arg
         LambdaExpression lambda = Expression.Lambda(typeof(ObjectActivator), newExp, param);
 
         //compile it
-        var compiled = (ObjectActivator)lambda.Compile();
+        ObjectActivator compiled = (ObjectActivator)lambda.Compile();
 
-        _activators.Add(ctor, compiled);
+        _activators.Add(constructorInfo, compiled);
 
         return compiled;
     }

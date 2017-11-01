@@ -10,7 +10,7 @@ The Suice framework begins with the Injector class.  You must first instantiate 
 This is an example of creating the Injector and initializing it after registering a module.
 
 ```
-using DTools.Suice;
+using Suice;
 
 public class MainAppClass
 {
@@ -41,7 +41,7 @@ Modules are classes that define factories, singletons and instances to specific 
 Modules also allow you to implement the factory pattern through methods using the Provides attribute. The following example shows how to create a new connection using the factory pattern which requires the dependency ISocket.  
 
 ```
-using DTools.Suice;
+using Suice;
 
 public class ExampleModule : AbstractModule
 {
@@ -66,8 +66,6 @@ There are three scope types:
 * Scope.NO_SCOPE - Create a new instance for every request of this class.
 * Scope.EAGER_SINGLETON - Instantiates instance even if it is not referenced as a dependency to another class.  This will create it at startup.  Should have at least ones of these in every application to kickoff the instantiation of others.
 
-> TIP: Modules are great for defining conditional runtime or compile-time implementations for different platforms.  Although, the easiest way to create a dependency is using Just In Time (JIT) attributes.  JIT attributes are flags on classes and interfaces that can be defined to automatically create dependencies through reflection. There are several JIT attributes.
-
 First, the Singleton attribute.  You may mark a class as a [Singleton], as shown in the following example, which will bind that class and inject necessary dependencies through field injection or constructor injection. 
 
 The act of injection is providing a dependency to an instance.   Shown in the example above in creating a network connection, the ISocket is a dependency for IConnection.  In order to inject into a class through a constructor or parameter, you must attach the [Inject] attribute. 
@@ -75,7 +73,7 @@ The act of injection is providing a dependency to an instance.   Shown in the ex
 Here’s an example of using Constructor Injection with the Singleton attribute:
 
 ```
-using DTools.Suice;
+using Suice;
 
 [Singleton]
 public class AchievementService : IInitializable, IAchievementService
@@ -107,7 +105,7 @@ Field injection is a feature I plan to take out in the near future.  Suice 2.0 p
 The following shows how you can inject a dependency through field injection:
 
 ```
-using DTools.Suice;
+using Suice;
 
 [Singleton]
 public class AchievementService : IAchievementService 
@@ -125,8 +123,6 @@ public class AchievementService : IAchievementService
 It’s best to always create an interface for your dependencies so they may be Mocked during test driven development and is an overall great process to make things modular and flexible.  This can be done using the JIT attribute ImplementedBy.  Implemented can be placed on an interface with the defined class type that will be implemented during run time.  Here’s an example:
 
 ```
-using CmnTools.Suice;
-
 [ImplementedBy(typeof(StaticData))]
 public interface IStaticData
 {
@@ -151,8 +147,6 @@ This is a huge feature and one of the reasons why I built suice in the first pla
 Although some people would disagree that circular dependency usually flags that there's an issue with the system as a whole.  My company actually stopped using Suice for this reason, after building a complex 500K+ Line project or even bigger, when a circular dependency comes in and coming up with a solution to avoid it sometimes takes days.  It's better to hack with it and flag for a future refactor later.  Therefore, I've made this available!
 
 I'm using proxies in order to solve the solution of circular dependency, and it requires this library - https://github.com/castleproject/Core
-
-Due to the limitations of C#, I've only supported Interfaces, as regular classes can't be properly proxied unless you make all the functions virtual!  I miss Java <3 because Guice can properly override all of these.  This means that circular dependencies can only reference interfaces, not their implementations which can be easily setup in the IStaticData example above.  At the end of the day - in C# to make things properly testable with any mocking framework, you must use interfaces as they have the same limitations of not being able to override normal functions.
 
 ## Dynamic Providers
 
@@ -214,29 +208,3 @@ public class ShopItem
 	}
 }
 ```
-
-One feature to note, in the future, we should be able to pass dynamic constructor requirements through the IProvider.  IE: provider.Provide(template) which will allow dynamic constructor reqs + injectable. Guice has it, suice should too :).
-
-## Copyright Notice
-
-MIT License
-
-Copyright (c) 2016 Joseph "DisTurBinG Cooper
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.

@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>2.0.1</Version>
+    <Authors>Joseph "DisTurBinG" Cooper</Authors>
+    <Company>KintoHub Limited</Company>
+    <Product>Suice</Product>
+    <Description>Open source JIT Dependency Injection.  Just another one - we know! But this follows the same design principles of Google's Guice. MIT License
+
+Has been used in 20+ Games which have had a combined download of 25M. Production ready!</Description>
+    <Copyright>KintoHub Limited 2017</Copyright>
+    <PackageProjectUrl>https://github.com/Disturbing/suice</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Disturbing/suice</RepositoryUrl>
+    <RepositoryType>github</RepositoryType>
+    <PackageTags>dependency injection JIT suice unity tdd circular-dependencies unit test just in time</PackageTags>
+    <PackageReleaseNotes>Upgraded to .net CORE 2.0
+Upgrade to VS 2017 project format
+Using XUnit for testing now</PackageReleaseNotes>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageIconUrl></PackageIconUrl>
+    <PackageLicenseUrl>https://github.com/Disturbing/suice/blob/master/LICENSE.txt</PackageLicenseUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Castle.Core" Version="4.2.1" />
+  </ItemGroup>
+
+</Project>
